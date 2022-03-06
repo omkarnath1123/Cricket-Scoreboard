@@ -6,24 +6,23 @@ import com.omkar_nath.cricket_score_board.utils.CommandEnum;
 
 import java.util.Objects;
 
-public class BattingOrder implements Command {
+public class Results implements Command{
     private final CricketBoardHandler match;
 
-    public BattingOrder(CricketBoardHandler match) {
+    public Results(CricketBoardHandler match) {
         this.match = match;
     }
 
     @Override
     public String helpText() {
-        return CommandEnum.BATTING_ORDER.name() + "enter the names of players in order";
+        return CommandEnum.RESULTS.name();
     }
 
     @Override
     public void execute(String[] params) throws InvalidParameterException {
-        int playersCount = this.match.getPlayersCount();
-        if (Objects.isNull(params) || params.length != playersCount)
-            throw new InvalidParameterException("Expected the names of " + playersCount + " players");
+        if (Objects.nonNull(params) && params.length > 0)
+            throw new InvalidParameterException("no parameter expected for results");
 
-        this.match.updateBattingOrder(params);
+        this.match.declareResults();
     }
 }

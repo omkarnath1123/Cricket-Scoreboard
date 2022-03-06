@@ -1,13 +1,13 @@
 package com.omkar_nath.cricket_score_board.domain;
 
-public class BattingTeamProfile {
+public class BattingTeamPlayerProfile {
 
     private int runsScored;
     private int foursCount;
     private int sixCount;
     private int ballsPlayed;
 
-    public BattingTeamProfile() {
+    public BattingTeamPlayerProfile() {
         this.runsScored = this.foursCount = this.sixCount = this.ballsPlayed = 0;
     }
 

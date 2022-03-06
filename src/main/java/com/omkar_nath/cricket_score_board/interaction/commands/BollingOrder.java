@@ -21,10 +21,10 @@ public class BollingOrder implements Command{
 
     @Override
     public void execute(String[] params) throws InvalidParameterException {
-        int playersCount = this.match.getPlayersCount();
-        if (Objects.isNull(params) || params.length != playersCount)
-            throw new InvalidParameterException("Expected the names of " + playersCount + " players");
+        int noOfOvers = this.match.getNumberOfOvers();
+        if (Objects.isNull(params) || params.length != noOfOvers)
+            throw new InvalidParameterException("Expected the names of " + noOfOvers + " players");
 
-        this.match.updateBallingOrder(params);
+        this.match.updateBollingOrder(params);
     }
 }

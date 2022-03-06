@@ -25,6 +25,9 @@ public class CommandFactory {
         commands.addCommand(CommandEnum.BOLLING_ORDER, new BollingOrder(cricketBoardHandler));
         commands.addCommand(CommandEnum.BATTING_ORDER, new BattingOrder(cricketBoardHandler));
         commands.addCommand(CommandEnum.THIS_OVER, new ThisOver(cricketBoardHandler));
+        commands.addCommand(CommandEnum.OVER_COUNT, new OverSize(cricketBoardHandler));
+        commands.addCommand(CommandEnum.RESULTS, new Results(cricketBoardHandler));
+        commands.addCommand(CommandEnum.TEAM_NAMES, new TeamName(cricketBoardHandler));
         return commands;
     }
 

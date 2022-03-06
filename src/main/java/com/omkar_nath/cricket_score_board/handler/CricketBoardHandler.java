@@ -1,71 +1,103 @@
 package com.omkar_nath.cricket_score_board.handler;
 
-import com.omkar_nath.cricket_score_board.domain.BallState;
-import com.omkar_nath.cricket_score_board.domain.BattingTeamProfile;
-import com.omkar_nath.cricket_score_board.domain.CricketBoard;
-import com.omkar_nath.cricket_score_board.domain.Over;
+import com.omkar_nath.cricket_score_board.domain.*;
 import com.omkar_nath.cricket_score_board.excptions.InvalidGameState;
+import com.omkar_nath.cricket_score_board.utils.Config;
+import com.omkar_nath.cricket_score_board.utils.Constant;
 import com.omkar_nath.cricket_score_board.utils.GameState;
+import com.omkar_nath.cricket_score_board.utils.StringUtils;
 
 import java.util.*;
 
 public class CricketBoardHandler {
-    private CricketBoard cricketBoard;
+    private Match match;
 
     public int getPlayersCount() {
-        if (Objects.isNull(cricketBoard)) {
+        Inning currentInning = match.getCurrentInning();
+        if (Objects.isNull(currentInning)) {
             throw new InvalidGameState("Match cricket board has not been created yet.");
         }
-        return cricketBoard.getTeamSize();
+        return match.getTeamSize();
+    }
+
+    public int getNumberOfOvers() {
+        Inning currentInning = match.getCurrentInning();
+        if (Objects.isNull(currentInning)) {
+            throw new InvalidGameState("Match cricket board has not been created yet.");
+        }
+        return match.getNoOfOvers();
     }
 
     public void buildTeams(int size) {
-        cricketBoard = new CricketBoard(size);
-        cricketBoard.setBallingTeam(new ArrayList<>(size));
-        cricketBoard.setBattingTeam(new ArrayList<>(size));
+        match = new Match(size);
     }
 
     public void showScoreBoard() {
-        if (Objects.isNull(cricketBoard) || cricketBoard.getState() == GameState.NOT_YET_STARTED) {
+        Inning currentInning = match.getCurrentInning();
+        if (Objects.isNull(currentInning) || currentInning.getState() == GameState.NOT_YET_STARTED) {
             throw new InvalidGameState("Match has not been started yet.");
         }
 
-        System.out.println("Player Name Score 4s 6s Balls");
-        final String strikerEnd = cricketBoard.getStrikerEnd(),
-                nonStrikerEnd = cricketBoard.getNonStrikerEnd();
-        cricketBoard.getBattingTeamProfiles().forEach((key, profile) -> {
+        System.out.println(Constant.EMPTY_STRING);
+        System.out.print("Score card for : ");
+        System.out.println(match.getCurrentInning() == match.getFirstInning() ? "FIRST_INNING" : "SECOND_INNING");
+        System.out.println(
+                StringUtils.rightPadSpaces("Player Name", Config.MAX_NAME_LEN) + " " +
+                        StringUtils.rightPadSpaces("Score", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("4s", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("6s", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Balls", Config.MAX_DETAILS_LEN));
+        final String strikerEnd = currentInning.getStrikerEnd(),
+                nonStrikerEnd = currentInning.getNonStrikerEnd();
+        currentInning.getBattingTeamProfiles().forEach((key, profile) -> {
             boolean isOnField = key.equals(strikerEnd) ||
                     key.equals(nonStrikerEnd);
-            System.out.println(key + (isOnField ? "*" : "") + " " +
-                    profile.getRunsScored() + " " +
-                    profile.getFoursCount() + " " +
-                    profile.getSixCount() + " " +
-                    profile.getBallsPlayed());
+
+            System.out.println(
+                    StringUtils.rightPadSpaces(key + (isOnField ? "*" : ""), Config.MAX_NAME_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getRunsScored(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getFoursCount(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getSixCount(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getBallsPlayed(), Config.MAX_DETAILS_LEN));
         });
-        int wickets = cricketBoard.getWickets();
-        System.out.println("Total: " + cricketBoard.getTotalScore() + "/" + wickets);
-        System.out.println("Overs: " + cricketBoard.getCurrentOver());
+        int wickets = currentInning.getWickets();
+        System.out.println("Total: " + currentInning.getTotalScore() + "/" + wickets);
+        System.out.println("Overs: " + currentInning.getCurrentOver());
     }
 
     public void updateBattingOrder(String[] players) {
-        if (Objects.isNull(cricketBoard) || cricketBoard.getState() != GameState.NOT_YET_STARTED) {
+        Inning currentInning = match.getCurrentInning();
+        if (currentInning.getState() == GameState.ENDED && currentInning == match.getFirstInning()) {
+            match.setCurrentInning(match.getSecondInning());
+            currentInning = match.getCurrentInning();
+        }
+        if (Objects.isNull(currentInning) || currentInning.getState() != GameState.NOT_YET_STARTED) {
             throw new InvalidGameState("Cannot change teams now game has already started.");
         }
         List<String> order = new LinkedList<>(Arrays.asList(players));
-        cricketBoard.setBattingTeam(order);
-        order.forEach(player -> cricketBoard.getBattingTeamProfiles().put(player, new BattingTeamProfile()));
+        match.setFirstTeam(order);
+        Inning finalCurrentInning = currentInning;
+        order.forEach(player -> finalCurrentInning.getBattingTeamProfiles().put(player, new BattingTeamPlayerProfile()));
     }
 
-    public void updateBallingOrder(String[] players) {
-        if (cricketBoard.getState() != GameState.NOT_YET_STARTED) {
+    public void updateBollingOrder(String[] players) {
+        Inning currentInning = match.getCurrentInning();
+        if (currentInning.getState() == GameState.ENDED && currentInning == match.getFirstInning()) {
+            match.setCurrentInning(match.getSecondInning());
+            currentInning = match.getCurrentInning();
+        }
+        if (currentInning.getState() != GameState.NOT_YET_STARTED) {
             throw new InvalidGameState("Cannot change teams now game has already started.");
         }
         List<String> order = new LinkedList<>(Arrays.asList(players));
-        cricketBoard.setBallingTeam(order);
+        match.setSecondTeam(order);
+        Inning finalCurrentInning = currentInning;
+        order.forEach(player -> finalCurrentInning.getBollingTeamProfiles().put(player, new BollingTeamPlayerProfile()));
     }
 
     public boolean isValidOver(String[] balls) {
-        if (Objects.isNull(cricketBoard)) {
+        Inning currentInning = match.getCurrentInning();
+        if (Objects.isNull(currentInning)) {
             throw new InvalidGameState("Match has not been started yet.");
         }
         int ballsCount = 0;
@@ -76,38 +108,46 @@ public class CricketBoardHandler {
             if (state.getValidBall())
                 ballsCount++;
         }
-        return ballsCount == 6;
+        return ballsCount <= Config.DEFAULT_OVER_SIZE;
     }
 
     public void addOver(String[] balls) {
-        if (Objects.isNull(cricketBoard)) {
+        Inning currentInning = match.getCurrentInning();
+        if (Objects.isNull(currentInning)) {
             throw new InvalidGameState("Match has not been started yet.");
         }
 
-        if (cricketBoard.getState() == GameState.ENDED)
+        if (currentInning.getState() == GameState.ENDED) {
             throw new InvalidGameState("Game already ended");
-
-        if (cricketBoard.getState() == GameState.NOT_YET_STARTED) {
-            cricketBoard.setState(GameState.ON_GOING);
-            cricketBoard.setStrikerEnd(cricketBoard.getBattingTeam().get(0));
-            cricketBoard.setNonStrikerEnd(cricketBoard.getBattingTeam().get(1));
         }
 
-        cricketBoard.addCurrentOver();
-        Map<String, BattingTeamProfile> team = cricketBoard.getBattingTeamProfiles();
+        if (currentInning.getState() == GameState.NOT_YET_STARTED) {
+            currentInning.setState(GameState.ON_GOING);
+            currentInning.setStrikerEnd(match.getFirstTeam().get(0));
+            currentInning.setNonStrikerEnd(match.getFirstTeam().get(1));
+        }
+
+
+        Map<String, BattingTeamPlayerProfile> team = currentInning.getBattingTeamProfiles();
         Over over = new Over();
+        int noBalls = 0;
         List<BallState> ballStates = new LinkedList<>();
         for (String ball : balls) {
             BallState state = BallState.getState(ball);
             ballStates.add(state);
-            BattingTeamProfile striker = team.get(cricketBoard.getStrikerEnd());
+            BattingTeamPlayerProfile striker = team.get(currentInning.getStrikerEnd());
             striker.addRunsScored(state.getRun());
             if (state.getValidBall())
                 striker.addBallsPlayed();
 
-            cricketBoard.appendTotalScore(state.getRun());
+            currentInning.appendTotalScore(state.getRun());
             if (state == BallState.WIDE)
-                cricketBoard.appendTotalScore(1);
+                currentInning.appendTotalScore(1);
+
+            if (state == BallState.NO_BALL)
+                noBalls = noBalls + 2;
+            else if (state == BallState.WIDE)
+                noBalls++;
 
             if (state == BallState.FOUR)
                 striker.addFoursCount();
@@ -118,31 +158,73 @@ public class CricketBoardHandler {
                 swapStriker();
             }
             if (state == BallState.LEG_BEFORE_WICKET || state == BallState.WICKET) {
-                cricketBoard.addWickets();
-                int nextStrikerBatsmanPos = cricketBoard.getNextStrikerBatsmanPos();
-                if (nextStrikerBatsmanPos == cricketBoard.getTeamSize() - 1) {
+                currentInning.addWickets();
+                int nextStrikerBatsmanPos = currentInning.getNextStrikerBatsmanPos();
+                if (nextStrikerBatsmanPos == match.getTeamSize()) {
                     over.setNoBalls(Math.max(0, ballStates.size() - 6));
                     over.setBallStates(ballStates);
-                    cricketBoard.getOvers().add(over);
-                    cricketBoard.setState(GameState.ENDED);
+                    currentInning.getOvers().add(over);
+                    currentInning.setState(GameState.ENDED);
+                    int normalBalls = ballStates.size() - noBalls;
+                    boolean isCompleteOver = normalBalls == 6;
+                    currentInning.addCurrentOver(isCompleteOver ? 1 : 0.1 * normalBalls);
                     return;
                 }
-                cricketBoard.setStrikerEnd(cricketBoard.getBattingTeam().get(nextStrikerBatsmanPos));
-                cricketBoard.updateNextStrikerBatsmanPos();
+                currentInning.setStrikerEnd(match.getFirstTeam().get(nextStrikerBatsmanPos));
+                currentInning.updateNextStrikerBatsmanPos();
             }
         }
-        over.setNoBalls(ballStates.size() - 6);
+        currentInning.addCurrentOver(1D);
+        over.setNoBalls(noBalls);
         over.setBallStates(ballStates);
-        cricketBoard.getOvers().add(over);
+        currentInning.getOvers().add(over);
         swapStriker();
 
-        if (cricketBoard.getOversCount() == cricketBoard.getCurrentOver())
-            cricketBoard.setState(GameState.ENDED);
+        if (match.getNoOfOvers() == currentInning.getCurrentOver()) {
+            currentInning.setState(GameState.ENDED);
+        }
+
     }
 
     private void swapStriker() {
-        String temp = cricketBoard.getStrikerEnd();
-        cricketBoard.setStrikerEnd(cricketBoard.getNonStrikerEnd());
-        cricketBoard.setNonStrikerEnd(temp);
+        Inning currentInning = match.getCurrentInning();
+        String temp = currentInning.getStrikerEnd();
+        currentInning.setStrikerEnd(currentInning.getNonStrikerEnd());
+        currentInning.setNonStrikerEnd(temp);
+    }
+
+    public void setOverInMatch(int noOfOvers) {
+        if (Objects.isNull(match))
+            throw new InvalidGameState("Match has not been created yet");
+
+        match.setNoOfOvers(noOfOvers);
+    }
+
+    public void declareResults() {
+        Inning currentInning = match.getCurrentInning();
+        if (currentInning.getState() != GameState.ENDED)
+            throw new InvalidGameState("Match has not been ended to declare the winner");
+
+        Inning first = match.getFirstInning();
+        Inning second = match.getSecondInning();
+        String firstTeamName = match.getFirstTeamName() == null ? "First" : match.getFirstTeamName();
+        String secondTeamName = match.getSecondTeamName() == null ? "Second" : match.getSecondTeamName();
+        int runsDiff = Math.abs(first.getTotalScore() - second.getTotalScore());
+        System.out.println(Constant.EMPTY_STRING);
+        System.out.print("Result : ");
+        if (first.getTotalScore() > second.getTotalScore())
+            System.out.println(firstTeamName + " team won the match by " + runsDiff + " runs");
+        else if (first.getTotalScore() < second.getTotalScore())
+            System.out.println(secondTeamName + " team won the match by " + runsDiff + " runs");
+        else
+            System.out.println("Match is tie");
+    }
+
+    public void setNames(String firstName, String secondName) {
+        if (Objects.isNull(match))
+            throw new InvalidGameState("Match has not been created yet");
+
+        this.match.setFirstTeamName(firstName);
+        this.match.setSecondTeamName(secondName);
     }
 }

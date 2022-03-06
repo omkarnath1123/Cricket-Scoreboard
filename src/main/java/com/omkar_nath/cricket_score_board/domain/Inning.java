@@ -3,34 +3,26 @@ package com.omkar_nath.cricket_score_board.domain;
 import com.omkar_nath.cricket_score_board.utils.Constant;
 import com.omkar_nath.cricket_score_board.utils.GameState;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class CricketBoard {
-    private final int teamSize;
+public class Inning {
+    private final Map<String, BattingTeamPlayerProfile> battingTeamProfiles = new LinkedHashMap<>();
+    private final Map<String, BollingTeamPlayerProfile> bollingTeamProfiles = new LinkedHashMap<>();
     private int wickets = 0;
-    private final Map<String, BattingTeamProfile> battingTeamProfiles = new HashMap<>();
-    private final Map<String, BattingTeamProfile> ballingTeamProfiles = new HashMap<>();
-    private int oversCount = 0;
-    private List<String> battingTeam;
-    private List<String> ballingTeam;
     private List<Over> overs = new LinkedList<>();
     private int totalScore = 0;
     private GameState state = GameState.NOT_YET_STARTED;
-    private int currentOver = 0;
+    private double currentOver = 0D;
     private String currentBaller = Constant.EMPTY_STRING;
     private String strikerEnd = Constant.EMPTY_STRING;
     private String nonStrikerEnd = Constant.EMPTY_STRING;
     private int nextStrikerBatsmanPos = 2;
 
-    public CricketBoard(int teamSize) {
-        this.teamSize = teamSize;
-    }
-
-    public Map<String, BattingTeamProfile> getBallingTeamProfiles() {
-        return ballingTeamProfiles;
+    public Map<String, BollingTeamPlayerProfile> getBollingTeamProfiles() {
+        return bollingTeamProfiles;
     }
 
     public int getWickets() {
@@ -41,14 +33,6 @@ public class CricketBoard {
         this.wickets++;
     }
 
-    public void setOvers(List<Over> overs) {
-        this.overs = overs;
-    }
-
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
-    }
-
     public GameState getState() {
         return state;
     }
@@ -57,12 +41,12 @@ public class CricketBoard {
         this.state = state;
     }
 
-    public Integer getCurrentOver() {
+    public double getCurrentOver() {
         return currentOver;
     }
 
-    public void addCurrentOver() {
-        this.currentOver++;
+    public void addCurrentOver(double over) {
+        this.currentOver = this.currentOver + over;
     }
 
     public String getCurrentBaller() {
@@ -105,43 +89,15 @@ public class CricketBoard {
         return totalScore;
     }
 
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
     public void appendTotalScore(int totalScore) {
         this.totalScore = this.totalScore + totalScore;
     }
 
-    public Map<String, BattingTeamProfile> getBattingTeamProfiles() {
+    public Map<String, BattingTeamPlayerProfile> getBattingTeamProfiles() {
         return battingTeamProfiles;
-    }
-
-    public Map<String, BattingTeamProfile> getBollingTeamProfiles() {
-        return ballingTeamProfiles;
-    }
-
-    public int getTeamSize() {
-        return teamSize;
-    }
-
-    public int getOversCount() {
-        return oversCount;
-    }
-
-    public void setOversCount(int oversCount) {
-        this.oversCount = oversCount;
-    }
-
-    public List<String> getBattingTeam() {
-        return battingTeam;
-    }
-
-    public void setBattingTeam(List<String> battingTeam) {
-        this.battingTeam = battingTeam;
-    }
-
-    public List<String> getBallingTeam() {
-        return ballingTeam;
-    }
-
-    public void setBallingTeam(List<String> ballingTeam) {
-        this.ballingTeam = ballingTeam;
     }
 }

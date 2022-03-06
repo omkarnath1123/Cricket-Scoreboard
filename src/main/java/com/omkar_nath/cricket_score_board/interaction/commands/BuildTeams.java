@@ -3,6 +3,7 @@ package com.omkar_nath.cricket_score_board.interaction.commands;
 import com.omkar_nath.cricket_score_board.excptions.InvalidParameterException;
 import com.omkar_nath.cricket_score_board.handler.CricketBoardHandler;
 import com.omkar_nath.cricket_score_board.utils.CommandEnum;
+import com.omkar_nath.cricket_score_board.utils.Config;
 import com.omkar_nath.cricket_score_board.utils.Constant;
 import com.omkar_nath.cricket_score_board.utils.StringUtils;
 
@@ -27,6 +28,10 @@ public class BuildTeams implements Command {
         }
         if (!StringUtils.isInteger(params[0]))
             throw new InvalidParameterException("team size must be an integer");
+
+        Integer teamSize = Integer.parseInt(params[0]);
+        if (teamSize < Config.MIN_TEAM_SIZE || teamSize > Config.MAX_TEAM_SIZE)
+            throw new InvalidParameterException("team size can only be help of min size : " + Config.MIN_TEAM_SIZE + " and max size" + Config.MAX_TEAM_SIZE);
 
         this.match.buildTeams(Integer.parseInt(params[0]));
     }
