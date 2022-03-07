@@ -16,7 +16,7 @@ public class BollingOrder implements Command{
 
     @Override
     public String helpText() {
-        return CommandEnum.BOLLING_ORDER.name() + "enter the names of players in order";
+        return CommandEnum.BOLLING_ORDER.name() + " enter the names of players in order";
     }
 
     @Override

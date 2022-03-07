@@ -18,7 +18,7 @@ public class BuildTeams implements Command {
 
     @Override
     public String helpText() {
-        return CommandEnum.TEAM_PLAYERS.name() + Constant.BUILD_TEAMS_HELP_TEXT_MSG;
+        return CommandEnum.TEAM_PLAYERS.name() + " " + Constant.BUILD_TEAMS_HELP_TEXT_MSG;
     }
 
     @Override

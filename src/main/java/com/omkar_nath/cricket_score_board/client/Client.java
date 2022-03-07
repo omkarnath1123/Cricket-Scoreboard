@@ -36,6 +36,11 @@ public class Client {
                 if (inputLine.equalsIgnoreCase(Constant.EXIT)) {
                     break;
                 }
+                if (inputLine.equalsIgnoreCase("help")) {
+                    commandFactory.listCommandHelp();
+                    System.out.println(" ");
+                    continue;
+                }
 
                 processInputLine(inputLine);
             }

@@ -15,7 +15,7 @@ public class ThisOver implements Command {
 
     @Override
     public String helpText() {
-        return CommandEnum.THIS_OVER.name() + "the events in the six balls";
+        return CommandEnum.THIS_OVER.name() + " the events in the six balls";
     }
 
     @Override

@@ -16,7 +16,7 @@ public class TeamName implements Command{
 
     @Override
     public String helpText() {
-        return CommandEnum.TEAM_NAMES.name() + "names of two teams";
+        return CommandEnum.TEAM_NAMES.name() + " names of two teams";
     }
 
     @Override

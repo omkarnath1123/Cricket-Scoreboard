@@ -15,7 +15,7 @@ public class BattingOrder implements Command {
 
     @Override
     public String helpText() {
-        return CommandEnum.BATTING_ORDER.name() + "enter the names of players in order";
+        return CommandEnum.BATTING_ORDER.name() + " enter the names of players in order";
     }
 
     @Override
