@@ -18,4 +18,10 @@ public class StringUtils {
     public static String rightPadSpaces(Integer value, int length) {
         return rightPadSpaces(Integer.toString(value), length);
     }
+
+    public static String rightPadSpaces(Double value, int length) {
+        if (Double.isNaN(value))
+            value = 0D;
+        return rightPadSpaces(String.format("%.2f", value), length);
+    }
 }

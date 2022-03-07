@@ -2,53 +2,54 @@ package com.omkar_nath.cricket_score_board.domain;
 
 public class BollingTeamPlayerProfile {
 
-    private int medianOvers;
+    private int madienOvers;
     private int dotBalls;
-    private int wicketsTake;
-    private int oversBowled;
+    private int wicketsTaken;
+    private double oversBowled;
     private int runsGiven;
 
     public BollingTeamPlayerProfile() {
-        this.medianOvers = this.dotBalls = this.wicketsTake = this.oversBowled = this.runsGiven = 0;
+        this.madienOvers = this.dotBalls = this.wicketsTaken = this.runsGiven = 0;
+        this.oversBowled = 0D;
     }
 
-    public int getMedianOvers() {
-        return medianOvers;
+    public int getMadienOvers() {
+        return madienOvers;
     }
 
-    public void setMedianOvers(int medianOvers) {
-        this.medianOvers = medianOvers;
+    public void addMedianOvers() {
+        this.madienOvers++;
     }
 
     public int getDotBalls() {
         return dotBalls;
     }
 
-    public void setDotBalls(int dotBalls) {
-        this.dotBalls = dotBalls;
+    public void addDotBalls(int dotBalls) {
+        this.dotBalls = this.dotBalls + dotBalls;
     }
 
-    public int getWicketsTake() {
-        return wicketsTake;
+    public int getWicketsTaken() {
+        return wicketsTaken;
     }
 
-    public void setWicketsTake(int wicketsTake) {
-        this.wicketsTake = wicketsTake;
+    public void addWicketsTaken() {
+        this.wicketsTaken++;
     }
 
-    public int getOversBowled() {
+    public double getOversBowled() {
         return oversBowled;
     }
 
-    public void setOversBowled(int oversBowled) {
-        this.oversBowled = oversBowled;
+    public void addOversBowled(double oversBowled) {
+        this.oversBowled = oversBowled + this.oversBowled;
     }
 
     public int getRunsGiven() {
         return runsGiven;
     }
 
-    public void setRunsGiven(int runsGiven) {
-        this.runsGiven = runsGiven;
+    public void addRunsGiven(int runsGiven) {
+        this.runsGiven = this.runsGiven + runsGiven;
     }
 }

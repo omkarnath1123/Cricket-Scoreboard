@@ -38,31 +38,61 @@ public class CricketBoardHandler {
             throw new InvalidGameState("Match has not been started yet.");
         }
 
+        boolean isFirstInning = match.getCurrentInning() == match.getFirstInning();
+        String battingTeam = isFirstInning ? match.getFirstTeamName() : match.getSecondTeamName();
+        String bollingTeam = !isFirstInning ? match.getFirstTeamName() : match.getSecondTeamName();
+
         System.out.println(Constant.EMPTY_STRING);
-        System.out.print("Score card for : ");
-        System.out.println(match.getCurrentInning() == match.getFirstInning() ? "FIRST_INNING" : "SECOND_INNING");
+        System.out.println("Score card for : " + battingTeam);
         System.out.println(
                 StringUtils.rightPadSpaces("Player Name", Config.MAX_NAME_LEN) + " " +
                         StringUtils.rightPadSpaces("Score", Config.MAX_DETAILS_LEN) + " " +
                         StringUtils.rightPadSpaces("4s", Config.MAX_DETAILS_LEN) + " " +
                         StringUtils.rightPadSpaces("6s", Config.MAX_DETAILS_LEN) + " " +
-                        StringUtils.rightPadSpaces("Balls", Config.MAX_DETAILS_LEN));
+                        StringUtils.rightPadSpaces("Balls", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Strike Rate", Config.MAX_DETAILS_LEN));
         final String strikerEnd = currentInning.getStrikerEnd(),
                 nonStrikerEnd = currentInning.getNonStrikerEnd();
-        currentInning.getBattingTeamProfiles().forEach((key, profile) -> {
-            boolean isOnField = key.equals(strikerEnd) ||
-                    key.equals(nonStrikerEnd);
+        currentInning.getBattingTeamProfiles().forEach((name, profile) -> {
+            boolean isOnField = name.equals(strikerEnd) ||
+                    name.equals(nonStrikerEnd);
+            double strikeRate = (double) profile.getRunsScored() / profile.getBallsPlayed();
 
             System.out.println(
-                    StringUtils.rightPadSpaces(key + (isOnField ? "*" : ""), Config.MAX_NAME_LEN) + " " +
+                    StringUtils.rightPadSpaces(name + (isOnField ? "*" : ""), Config.MAX_NAME_LEN) + " " +
                             StringUtils.rightPadSpaces(profile.getRunsScored(), Config.MAX_DETAILS_LEN) + " " +
                             StringUtils.rightPadSpaces(profile.getFoursCount(), Config.MAX_DETAILS_LEN) + " " +
                             StringUtils.rightPadSpaces(profile.getSixCount(), Config.MAX_DETAILS_LEN) + " " +
-                            StringUtils.rightPadSpaces(profile.getBallsPlayed(), Config.MAX_DETAILS_LEN));
+                            StringUtils.rightPadSpaces(profile.getBallsPlayed(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(strikeRate, Config.MAX_DETAILS_LEN));
         });
         int wickets = currentInning.getWickets();
         System.out.println("Total: " + currentInning.getTotalScore() + "/" + wickets);
         System.out.println("Overs: " + currentInning.getCurrentOver());
+
+        System.out.println(Constant.EMPTY_STRING);
+        System.out.println("Score card for : " + bollingTeam);
+        System.out.println(
+                StringUtils.rightPadSpaces("Player Name", Config.MAX_NAME_LEN) + " " +
+                        StringUtils.rightPadSpaces("Overs Balled", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Madien Overs", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Dot Balls", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Wickets Taken", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Runs Given", Config.MAX_DETAILS_LEN) + " " +
+                        StringUtils.rightPadSpaces("Economy", Config.MAX_DETAILS_LEN)
+        );
+        currentInning.getBollingTeamProfiles().forEach((name, profile) -> {
+            double economy = profile.getRunsGiven() / profile.getOversBowled();
+            System.out.println(
+                    StringUtils.rightPadSpaces(name, Config.MAX_NAME_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getOversBowled(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getMadienOvers(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getDotBalls(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getWicketsTaken(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(profile.getRunsGiven(), Config.MAX_DETAILS_LEN) + " " +
+                            StringUtils.rightPadSpaces(economy, Config.MAX_DETAILS_LEN)
+            );
+        });
     }
 
     public void updateBattingOrder(String[] players) {
@@ -127,32 +157,39 @@ public class CricketBoardHandler {
             currentInning.setNonStrikerEnd(match.getFirstTeam().get(1));
         }
 
-
-        Map<String, BattingTeamPlayerProfile> team = currentInning.getBattingTeamProfiles();
-        Over over = new Over();
         int noBalls = 0;
+        int dotBalls = 0;
+        int currOverRun = 0;
+        int currentOver = (int) currentInning.getCurrentOver();
+        Map<String, BattingTeamPlayerProfile> team = currentInning.getBattingTeamProfiles();
+        BollingTeamPlayerProfile bowler = currentInning.getBollingTeamProfiles().get(match.getSecondTeam().get(currentOver));
+        Over over = new Over();
+
         List<BallState> ballStates = new LinkedList<>();
         for (String ball : balls) {
             BallState state = BallState.getState(ball);
             ballStates.add(state);
             BattingTeamPlayerProfile striker = team.get(currentInning.getStrikerEnd());
             striker.addRunsScored(state.getRun());
+            currOverRun = currOverRun + state.getRun();
+            bowler.addRunsGiven(state.getRun());
             if (state.getValidBall())
                 striker.addBallsPlayed();
 
             currentInning.appendTotalScore(state.getRun());
-            if (state == BallState.WIDE)
+            if (state == BallState.WIDE) {
                 currentInning.appendTotalScore(1);
-
-            if (state == BallState.NO_BALL)
-                noBalls = noBalls + 2;
-            else if (state == BallState.WIDE)
                 noBalls++;
-
-            if (state == BallState.FOUR)
+            } else if (state == BallState.NO_BALL)
+                noBalls = noBalls + 2;
+            else if (state == BallState.FOUR)
                 striker.addFoursCount();
             else if (state == BallState.SIX)
                 striker.addSixCount();
+            else if (state == BallState.WICKET)
+                bowler.addWicketsTaken();
+            else if (state == BallState.DOT_BALLS)
+                dotBalls++;
 
             if (state.getRun() % 2 == 1) {
                 swapStriker();
@@ -167,13 +204,22 @@ public class CricketBoardHandler {
                     currentInning.setState(GameState.ENDED);
                     int normalBalls = ballStates.size() - noBalls;
                     boolean isCompleteOver = normalBalls == 6;
-                    currentInning.addCurrentOver(isCompleteOver ? 1 : 0.1 * normalBalls);
+                    double overSize = isCompleteOver ? 1 : 0.1 * normalBalls;
+                    currentInning.addCurrentOver(overSize);
+                    bowler.addOversBowled(overSize);
+                    bowler.addDotBalls(dotBalls);
+                    if (currOverRun == 0)
+                        bowler.addMedianOvers();
                     return;
                 }
                 currentInning.setStrikerEnd(match.getFirstTeam().get(nextStrikerBatsmanPos));
                 currentInning.updateNextStrikerBatsmanPos();
             }
         }
+        bowler.addOversBowled(1D);
+        bowler.addDotBalls(dotBalls);
+        if (currOverRun == 0)
+            bowler.addMedianOvers();
         currentInning.addCurrentOver(1D);
         over.setNoBalls(noBalls);
         over.setBallStates(ballStates);

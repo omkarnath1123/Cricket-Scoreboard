@@ -1,15 +1,15 @@
 TEAM_PLAYERS 5
 OVER_COUNT 2
-TEAM_NAMES INDIA_ONE INDIA_TWO
+TEAM_NAMES India Sri_Lanka
 
 BATTING_ORDER Sachin_Tendulkar Rahul_Dravid Sunil_Gavaskar Dilip_Vengsarkar Sourav_Ganguly
-BOLLING_ORDER Anil_Kumble Kapil_Dev
+BOLLING_ORDER Kumar_Sangakkara Mahela_Jayawardene
 THIS_OVER 1 1 1 1 1 2
 SHOW_SCORE_BOARD
 THIS_OVER W 4 4 Wd W 1 6
 SHOW_SCORE_BOARD
 
-BATTING_ORDER Anil_Kumble Kapil_Dev Jasprit_Bumrah Rohit_Sharma Virat_Kohli
+BATTING_ORDER Kumar_Sangakkara Mahela_Jayawardene Sanath_Jayasuriya Lasith_Malinga Chaminda_Vaas
 BOLLING_ORDER Sachin_Tendulkar Rahul_Dravid
 THIS_OVER 4 6 W W 1 1
 SHOW_SCORE_BOARD

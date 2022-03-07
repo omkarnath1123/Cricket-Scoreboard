@@ -1,12 +1,12 @@
 package com.omkar_nath.cricket_score_board.domain;
 
 import com.omkar_nath.cricket_score_board.utils.Constant;
-import com.omkar_nath.cricket_score_board.utils.GameState;
 import com.omkar_nath.cricket_score_board.utils.StringUtils;
 
 import java.util.Objects;
 
 public enum BallState {
+    DOT_BALLS(0, true),
     ONE_RUN(1, true),
     TWO_RUN(2, true),
     THREE_RUN(3, true),
@@ -20,18 +20,6 @@ public enum BallState {
     private final Integer run;
     private final String event;
     private final boolean isValidBall;
-
-    public Integer getRun() {
-        return run;
-    }
-
-    public boolean getValidBall() {
-        return isValidBall;
-    }
-
-    public String getEvent() {
-        return event;
-    }
 
     BallState(Integer run, boolean isValidBall) {
         this.run = run;
@@ -57,5 +45,17 @@ public enum BallState {
                 return state;
         }
         return null;
+    }
+
+    public Integer getRun() {
+        return run;
+    }
+
+    public boolean getValidBall() {
+        return isValidBall;
+    }
+
+    public String getEvent() {
+        return event;
     }
 }
