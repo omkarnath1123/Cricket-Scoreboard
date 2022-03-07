@@ -1,8 +1,8 @@
 package com.omkar_nath.cricket_score_board.client;
 
-import com.omkar_nath.cricket_score_board.excptions.CommandNotFoundException;
-import com.omkar_nath.cricket_score_board.excptions.InvalidGameState;
-import com.omkar_nath.cricket_score_board.excptions.InvalidParameterException;
+import com.omkar_nath.cricket_score_board.exceptions.CommandNotFoundException;
+import com.omkar_nath.cricket_score_board.exceptions.InvalidGameState;
+import com.omkar_nath.cricket_score_board.exceptions.InvalidParameterException;
 import com.omkar_nath.cricket_score_board.interaction.CommandFactory;
 import com.omkar_nath.cricket_score_board.utils.Constant;
 

@@ -1,7 +1,7 @@
 package com.omkar_nath.cricket_score_board.interaction;
 
-import com.omkar_nath.cricket_score_board.excptions.CommandNotFoundException;
-import com.omkar_nath.cricket_score_board.excptions.InvalidParameterException;
+import com.omkar_nath.cricket_score_board.exceptions.CommandNotFoundException;
+import com.omkar_nath.cricket_score_board.exceptions.InvalidParameterException;
 import com.omkar_nath.cricket_score_board.handler.CricketBoardHandler;
 import com.omkar_nath.cricket_score_board.interaction.commands.*;
 import com.omkar_nath.cricket_score_board.utils.CommandEnum;

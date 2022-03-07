@@ -1,4 +1,4 @@
-package com.omkar_nath.cricket_score_board.excptions;
+package com.omkar_nath.cricket_score_board.exceptions;
 
 public class InvalidGameState extends RuntimeException {
 

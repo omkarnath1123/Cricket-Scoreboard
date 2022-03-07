@@ -1,6 +1,6 @@
 package com.omkar_nath.cricket_score_board.interaction.commands;
 
-import com.omkar_nath.cricket_score_board.excptions.InvalidParameterException;
+import com.omkar_nath.cricket_score_board.exceptions.InvalidParameterException;
 
 public interface Command {
     String helpText();
